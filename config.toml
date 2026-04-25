@@ -1,0 +1,14 @@
+
+[jira]
+project_key = "PW"
+issue_fields = ["summary", "status", "assignee", "created", "updated", "issuetype", "priority"]
+max_results = 50
+
+[outputs]
+raw_jira_csv = "data/jira_issues_raw.csv"
+processed_workflow_csv = "data/workflow_summary.csv"
+dashboard_html = "reports/dashboard.html"
+
+[dashboard]
+title = "Engineering Workflow Dashboard"
+
