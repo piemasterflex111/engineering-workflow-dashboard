@@ -5,8 +5,11 @@ issue_fields = ["summary", "status", "assignee", "created", "updated", "issuetyp
 max_results = 50
 
 [outputs]
-raw_jira_csv = "data/jira_issues_raw.csv"
-processed_workflow_csv = "data/workflow_summary.csv"
+raw_jira_issues_csv = "data/raw_jira_issues.csv"
+raw_github_prs_csv = "data/raw_github_prs.csv"
+traceability_csv = "data/traceability.csv"
+processed_workflow_csv = "data/processed_workflow.csv"
+daily_status_md = "reports/daily_status.md"
 dashboard_html = "reports/dashboard.html"
 
 [dashboard]

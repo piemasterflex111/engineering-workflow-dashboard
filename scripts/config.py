@@ -22,8 +22,11 @@ class JiraConfig(BaseModel):
     max_results: int
     
 class OutputConfig(BaseModel):
-    raw_jira_csv: str
+    raw_jira_issues_csv: str
+    raw_github_prs_csv: str
+    traceability_csv: str
     processed_workflow_csv: str
+    daily_status_md: str
     dashboard_html: str
     
 class DashboardConfig(BaseModel):
