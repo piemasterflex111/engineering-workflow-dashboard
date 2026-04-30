@@ -1,0 +1,48 @@
+[
+{
+    "key": "MOD-101",
+    "type": "MODULE",
+    "summary": "Power Control Module",
+    "fields": {
+    "module_name": "PCM",
+    "configuration": "Config A Rev2",
+    "linked_issues": ["PART-201", "PART-202", "NC-301", "RWK-401"]
+    }
+},
+{
+    "key": "PART-201",
+    "type": "PART",
+    "summary": "Power board assembly",
+    "fields": {
+    "part_number": "P1001",
+    "serial_number": "SN-001"
+    }
+},
+{
+    "key": "PART-202",
+    "type": "PART",
+    "summary": "Harness assembly",
+    "fields": {
+    "part_number": "p_1002",
+    "serial_number": "SN-002"
+    }
+},
+{
+    "key": "NC-301",
+    "type": "NONCONFORMANCE",
+    "summary": "Voltage ripple out of family",
+    "fields": {
+    "module_ref": "Power Ctrl Mod",
+    "severity": "Major"
+    }
+},
+{
+    "key": "RWK-401",
+    "type": "REWORK",
+    "summary": "Mass rework for configuration update",
+    "fields": {
+    "configuration": "cfg_a_rev_2",
+    "affected_parts": "P1001 / P-1002"
+    }
+}
+]
