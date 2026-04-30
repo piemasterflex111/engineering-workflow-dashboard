@@ -29,6 +29,13 @@ GitHub open PRs: 0
 GitHub merged PRs: 0
 ```
 
+## Portfolio Artifacts
+
+- [CASE_STUDY.md](CASE_STUDY.md) explains the problem, constraints, solution, and engineering evidence.
+- [SERVICES.md](SERVICES.md) maps this repo to practical workflow automation services.
+- [docs/design_tradeoffs.md](docs/design_tradeoffs.md) documents why the implementation stays simple.
+- [docs/linkedin_post_engineering_workflow_dashboard.md](docs/linkedin_post_engineering_workflow_dashboard.md) contains a LinkedIn-ready project post draft.
+
 ## Architecture
 
 ```text
