@@ -17,6 +17,8 @@ The pipeline:
 7. Generates a Markdown daily status report.
 8. Generates a static HTML dashboard.
 
+The repo also includes a synthetic Jira traceability workflow inspired by hardware module, part, nonconformance, and rework tracking. That sample mode demonstrates how messy Jira-style strings and linked tickets can be normalized into clean traceability records without exposing real company data.
+
 Current generated report example:
 
 ```text
@@ -42,19 +44,34 @@ raw Jira CSV    raw GitHub CSV
                     +--> reports/dashboard.html
 ```
 
-Important source files:
+Synthetic traceability mode:
 
 ```text
-scripts/config.py                  Load and validate .env + config.toml
-scripts/export_jira_issues_csv.py  Fetch Jira issues and write raw CSV
-scripts/export_github_prs_csv.py   Fetch GitHub PRs and write raw CSV
-scripts/jira_transform.py          Flatten one Jira issue payload
-scripts/github_transform.py        Flatten one GitHub PR payload
-scripts/build_workflow_summary.py  Build processed metrics
-scripts/generate_daily_status.py   Generate Markdown report
-scripts/generate_dashboard.py      Generate HTML dashboard
-scripts/run_pipeline.py            Run the full workflow
-tests/                             Pytest coverage for pure logic and pipeline order
+sample Jira-style module/part/NC/rework records
+        |
+        v
+normalize messy strings and linked tickets
+        |
+        v
+clean module traceability row
+```
+
+## Important Files
+
+```text
+scripts/config.py                    Load and validate .env + config.toml
+scripts/export_jira_issues_csv.py    Fetch Jira issues and write raw CSV
+scripts/export_github_prs_csv.py     Fetch GitHub PRs and write raw CSV
+scripts/jira_transform.py            Flatten one Jira issue payload
+scripts/github_transform.py          Flatten one GitHub PR payload
+scripts/build_workflow_summary.py    Build processed metrics
+scripts/generate_daily_status.py     Generate Markdown report
+scripts/generate_dashboard.py        Generate HTML dashboard
+scripts/run_pipeline.py              Run the full workflow
+scripts/traceability_transform.py    Normalize messy part/config/module strings
+scripts/build_traceability_report.py Build clean traceability rows from linked issues
+sample_data/                         Synthetic Jira-style traceability records
+tests/                               Pytest coverage for pure logic and pipeline order
 ```
 
 ## Project Structure
@@ -62,7 +79,9 @@ tests/                             Pytest coverage for pure logic and pipeline o
 ```text
 engineering-workflow-dashboard/
   data/                  Generated CSV outputs, ignored by git
+  docs/                  Project walkthrough and tradeoff notes
   reports/               Committed sample reports
+  sample_data/           Safe synthetic Jira-style data
   scripts/               Pipeline scripts and transformation logic
   tests/                 Pytest tests
   .env.example           Credential template
@@ -171,6 +190,8 @@ Current coverage includes:
 - Markdown report rendering
 - HTML dashboard rendering
 - pipeline step ordering without calling live APIs
+- traceability string normalization
+- linked Jira-style issue traceability row generation
 
 ## What Is Real vs Simplified
 
@@ -184,6 +205,7 @@ Real:
 - processed metrics
 - Markdown and HTML report generation
 - pytest tests for pure logic
+- synthetic traceability logic based on real hardware workflow problems
 
 Simplified:
 
@@ -191,6 +213,7 @@ Simplified:
 - metrics are intentionally small in scope
 - API error handling is still simple
 - no scheduled automation or CI pipeline yet
+- traceability data is synthetic and sanitized
 
 ## Engineering Lessons Demonstrated
 
@@ -200,12 +223,15 @@ Simplified:
 - Make empty outputs deterministic with known CSV columns.
 - Test pure logic without depending on live APIs.
 - Provide human-readable artifacts, not only raw data dumps.
+- Normalize messy operational strings before reporting on them.
+- Model linked Jira-style data as traceable records.
 
 ## Next Improvements
 
 - Add richer dashboard styling.
 - Add Jira status breakdown metrics.
 - Add GitHub review/merge-time metrics.
+- Export synthetic traceability rows to `data/traceability.csv`.
 - Add retry and clearer error categories for API failures.
 - Add CI to run pytest on every push.
 - Add screenshots to the README.
