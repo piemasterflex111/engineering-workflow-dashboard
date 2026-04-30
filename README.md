@@ -1,51 +1,76 @@
 # Engineering Workflow Dashboard
 
-## Purpose
+Python automation pipeline that pulls engineering workflow data from Jira and GitHub, normalizes it into CSV files, builds summary metrics, and generates Markdown and HTML reports.
 
-This project demonstrates a Python workflow automation pipeline that connects to Jira and GitHub APIs, retrieves engineering workflow data, saves CSV files, and generates a simple dashboard report.
+This project is intentionally small, but it follows the same structure used in real engineering automation work: secrets are separated from runtime config, API calls are isolated from transformation logic, outputs are reproducible, and pure logic is covered by pytest tests.
 
-The goal is to show clean API integration, configuration management, data export, and reporting using Python.
+## What It Does
 
-## Data Sources
+The pipeline:
 
-- Jira Cloud API
-- GitHub REST API
+1. Loads credentials from `.env` and runtime settings from `config.toml`.
+2. Fetches Jira issues from a configured Jira project.
+3. Fetches GitHub pull requests from a configured repository.
+4. Flattens nested API responses into CSV-friendly rows.
+5. Writes raw CSV exports under `data/`.
+6. Builds processed workflow metrics.
+7. Generates a Markdown daily status report.
+8. Generates a static HTML dashboard.
 
-## Current Status
+Current generated report example:
 
-- Project structure created
-- Virtual environment configured
-- Dependencies installed
-- Secrets separated into `.env`
-- Runtime settings separated into `config.toml`
-- Configuration validation implemented with Pydantic
-- Jira connection script in progress
+```text
+Jira total issues: 11
+Jira unassigned issues: 10
+GitHub total PRs: 0
+GitHub open PRs: 0
+GitHub merged PRs: 0
+```
+
+## Architecture
+
+```text
+Jira API        GitHub API
+   |                |
+   v                v
+raw Jira CSV    raw GitHub CSV
+   |                |
+   +-------> processed workflow metrics
+                    |
+                    +--> reports/daily_status.md
+                    |
+                    +--> reports/dashboard.html
+```
+
+Important source files:
+
+```text
+scripts/config.py                  Load and validate .env + config.toml
+scripts/export_jira_issues_csv.py  Fetch Jira issues and write raw CSV
+scripts/export_github_prs_csv.py   Fetch GitHub PRs and write raw CSV
+scripts/jira_transform.py          Flatten one Jira issue payload
+scripts/github_transform.py        Flatten one GitHub PR payload
+scripts/build_workflow_summary.py  Build processed metrics
+scripts/generate_daily_status.py   Generate Markdown report
+scripts/generate_dashboard.py      Generate HTML dashboard
+scripts/run_pipeline.py            Run the full workflow
+tests/                             Pytest coverage for pure logic and pipeline order
+```
 
 ## Project Structure
 
 ```text
 engineering-workflow-dashboard/
-  data/
-  reports/
-  scripts/
-    config.py
-    connect_to_jira.py
-  .env.example
+  data/                  Generated CSV outputs, ignored by git
+  reports/               Committed sample reports
+  scripts/               Pipeline scripts and transformation logic
+  tests/                 Pytest tests
+  .env.example           Credential template
   .gitignore
-  config.toml
+  config.toml            Non-secret runtime settings
   README.md
   requirements.txt
 ```
-
-## Configuration Design
-
-This project separates configuration into two layers:
-
-`.env` stores private or machine-specific values such as API tokens, account identity, and repository information.
-
-`config.toml` stores non-secret application behavior such as Jira project key, issue fields, output paths, and dashboard title.
-
-The Python configuration layer in `scripts/config.py` loads and validates both sources before API code runs.
 
 ## Setup
 
@@ -62,23 +87,7 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-If installing manually from scratch:
-
-```powershell
-pip install requests pandas pydantic pydantic-settings python-dotenv
-```
-
-Save installed dependencies:
-
-```powershell
-pip freeze > requirements.txt
-```
-
-## Environment Variables
-
-Create a local `.env` file in the project root.
-
-Use `.env.example` as the template:
+Create a local `.env` file using `.env.example` as the template:
 
 ```text
 JIRA_BASE_URL=https://your-domain.atlassian.net
@@ -92,54 +101,111 @@ GITHUB_REPO=your_repo_name
 
 Do not commit `.env`.
 
-## Runtime Settings
+## Configuration
 
-Non-secret runtime settings live in `config.toml`.
+Secrets and local account identity live in `.env`.
 
-Example settings include:
+Non-secret runtime behavior lives in `config.toml`, including:
 
 - Jira project key
 - Jira issue fields
-- Maximum Jira results
-- CSV output paths
-- Dashboard report title
+- maximum Jira results
+- output file paths
+- dashboard title
 
-## Validate Configuration
-
-Run this command from the project root:
+Validate config loading:
 
 ```powershell
 python -c "from scripts.config import ENV_SETTINGS, APP_CONFIG; print('config loaded')"
 ```
 
-Expected output:
+## Run The Pipeline
 
-```text
-config loaded
+Run the full workflow:
+
+```powershell
+python -m scripts.run_pipeline
 ```
 
-## Planned Workflow
+Run individual steps:
 
-1. Load and validate configuration.
-2. Connect to Jira API.
-3. Retrieve Jira issue workflow data.
-4. Save raw Jira data to CSV.
-5. Connect to GitHub API.
-6. Retrieve pull request or commit activity.
-7. Save GitHub data to CSV.
-8. Combine processed workflow data.
-9. Generate a simple dashboard report.
+```powershell
+python -m scripts.export_jira_issues_csv
+python -m scripts.export_github_prs_csv
+python -m scripts.build_workflow_summary
+python -m scripts.generate_daily_status
+python -m scripts.generate_dashboard
+```
 
-## Planned Outputs
+## Outputs
 
-- `data/jira_issues_raw.csv`
-- `data/workflow_summary.csv`
-- `reports/dashboard.html`
+Generated raw and processed data:
 
-## Security
+```text
+data/raw_jira_issues.csv
+data/raw_github_prs.csv
+data/processed_workflow.csv
+```
 
-Real credentials belong only in `.env`.
+Report artifacts:
 
-The `.env` file is excluded from Git using `.gitignore`.
+```text
+reports/daily_status.md
+reports/dashboard.html
+```
 
-The committed `.env.example` file documents required variables without exposing real credentials.
+`data/*.csv` is ignored because those files can contain live project data. The report files are committed as sample outputs.
+
+## Tests
+
+Run all tests:
+
+```powershell
+python -m pytest tests
+```
+
+Current coverage includes:
+
+- Jira issue transformation
+- GitHub PR transformation
+- Markdown report rendering
+- HTML dashboard rendering
+- pipeline step ordering without calling live APIs
+
+## What Is Real vs Simplified
+
+Real:
+
+- Jira Cloud API integration
+- GitHub REST API integration
+- environment-based secrets
+- config-driven output paths
+- CSV exports
+- processed metrics
+- Markdown and HTML report generation
+- pytest tests for pure logic
+
+Simplified:
+
+- dashboard styling is intentionally basic
+- metrics are intentionally small in scope
+- API error handling is still simple
+- no scheduled automation or CI pipeline yet
+
+## Engineering Lessons Demonstrated
+
+- Separate API access from data transformation.
+- Keep secrets out of source control.
+- Use config files for runtime behavior.
+- Make empty outputs deterministic with known CSV columns.
+- Test pure logic without depending on live APIs.
+- Provide human-readable artifacts, not only raw data dumps.
+
+## Next Improvements
+
+- Add richer dashboard styling.
+- Add Jira status breakdown metrics.
+- Add GitHub review/merge-time metrics.
+- Add retry and clearer error categories for API failures.
+- Add CI to run pytest on every push.
+- Add screenshots to the README.
