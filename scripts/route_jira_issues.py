@@ -16,7 +16,7 @@ def main():
     orchestrator = InfraWorkflowOrchestrator(client, dry_run=not args.live)
 
     # Fetch issues to process
-    jql = f"project = {APP_CONFIG.jira.project_key} AND status = Open ORDER BY updated DESC"
+    jql = f"project = {APP_CONFIG.jira.project_key} AND statusCategory != Done ORDER BY updated DESC"
     issues = client.search_issues(jql, fields=["summary", "description", "labels"], max_results=50)
 
     print(f"Processing {len(issues)} issues...")

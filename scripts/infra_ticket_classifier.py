@@ -21,7 +21,25 @@ class InfraTicketClassifier:
         - Human Review
         """
         summary = issue.get("fields", {}).get("summary", "").lower()
-        description = issue.get("fields", {}).get("description", "").lower()
+        
+        
+
+
+        fields = issue.get("fields") or {}
+        description_data = fields.get("description") or ""
+
+        # If it is a dictionary, extract the text (adjust key if needed, e.g., 'text' or 'value')
+        if isinstance(description_data, dict):
+            description = description_data.get("text") or description_data.get("value") or ""
+        else:
+            description = description_data
+
+        description = str(description).lower()
+
+
+
+
+
         content = f"{summary} {description}"
 
         linux_score = sum(1 for kw in self.LINUX_KEYWORDS if kw in content)
