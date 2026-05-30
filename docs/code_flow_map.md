@@ -38,7 +38,7 @@ Decision:
 - classifier returns Linux Operations
 
 Action:
-- comment: Auto-classified as Linux Operations by BMO Automation.
+- comment: Auto-classified as Linux Operations by OpsRoute Automation.
 - label: linux-operations
 
 Safety:

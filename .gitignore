@@ -16,3 +16,4 @@ reports/*.csv
 
 # Local editor settings
 .vscode/
+.aider*

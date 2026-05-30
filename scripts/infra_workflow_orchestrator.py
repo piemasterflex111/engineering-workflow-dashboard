@@ -62,7 +62,7 @@ class InfraWorkflowOrchestrator:
             "issue_key": issue_key,
             "category": category,
             "jira_label": safe_label,
-            "comment": f"Auto-classified as {category} by BMO Automation.",
+            "comment": f"Auto-classified as {category} by OpsRoute Automation.",
             "labels": [safe_label],
             "transition": None,
         }

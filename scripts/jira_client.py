@@ -1,5 +1,5 @@
 """
-Jira client abstraction for BMO-style workflow automation.
+Jira client abstraction for OpsRoute-style workflow automation.
 
 This client is intentionally small:
 - authenticate with Jira Cloud using email + API token

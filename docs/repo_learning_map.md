@@ -7,7 +7,7 @@ This repo has two workflows:
 1. Dashboard/reporting pipeline:
    Jira/GitHub data -> CSV -> transforms -> reports/dashboard
 
-2. BMO-style Jira routing automation:
+2. OpsRoute-style Jira routing automation:
    Jira issues -> classifier -> orchestrator -> dry-run/live Jira updates
 
 ## Main routing flow

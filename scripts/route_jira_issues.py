@@ -1,5 +1,5 @@
 """
-CLI script to route Jira issues based on BMO automation rules.
+CLI script to route Jira issues based on OpsRoute infrastructure routing rules.
 """
 import argparse
 from .jira_client import JiraClient
