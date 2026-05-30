@@ -1,87 +1,110 @@
-# Case Study: Engineering Workflow Dashboard
+# Engineering Workflow Dashboard and Jira Automation Lab — Case Study
 
 ## Problem
 
-Engineering teams often track work across tools such as Jira and GitHub, then manually copy data into spreadsheets or status reports. That creates repeat work, inconsistent reporting, and weak traceability.
-
-In hardware-adjacent environments, Jira can also become a traceability system for modules, parts, nonconformances, and rework records. Those records often contain inconsistent human-entered strings that are difficult to filter or export cleanly.
+Engineering and operations workflows often depend on messy ticket data, inconsistent human-entered strings, and manual reporting. This makes filtering, routing, and status reporting difficult.
 
 ## Goal
 
-Build a small Python automation pipeline that demonstrates how raw engineering workflow data can become repeatable reports:
+Build a Python automation project that can:
 
-- fetch Jira issue data
-- fetch GitHub pull request data
-- normalize nested API responses
-- compute summary metrics
-- generate Markdown and HTML reports
-- test transformation logic without relying on live APIs
+- fetch workflow data from Jira and GitHub
+- normalize nested API payloads
+- generate CSV and human-readable reports
+- classify infrastructure-style Jira tickets
+- dry-run planned actions before live updates
+- apply safe Jira sandbox updates only after review
 
-## Constraints
+## Architecture
 
-- credentials must not be committed
-- generated CSVs may contain live project data and should stay out of git
-- tests should not require Jira, GitHub, or network access
-- outputs should be inspectable by non-developers
-- synthetic traceability data must not expose real company data
+```text
+Jira / GitHub APIs
+        |
+        v
+Python API clients
+        |
+        v
+Normalization / transformation
+        |
+        v
+CSV + Markdown + HTML reports
 
-## Solution
-
-The project separates responsibilities into small scripts:
-
-- `scripts/config.py` loads `.env` and `config.toml`
-- export scripts call Jira and GitHub APIs
-- transform modules flatten raw API records
-- summary/report scripts produce processed metrics and human-readable artifacts
-- traceability modules normalize synthetic hardware-style Jira records
-
-The pipeline can be run with:
-
-```powershell
-python -m scripts.run_pipeline
+Jira issue search
+        |
+        v
+InfraTicketClassifier
+        |
+        v
+InfraWorkflowOrchestrator
+        |
+        v
+Dry-run action plan
+        |
+        v
+Optional Jira sandbox live update
 ```
 
-## Evidence Artifacts
+## Implementation
 
-The repo produces:
+The Jira automation path has four main pieces.
 
-- `data/raw_jira_issues.csv`
-- `data/raw_github_prs.csv`
-- `data/processed_workflow.csv`
-- `reports/daily_status.md`
-- `reports/dashboard.html`
+### 1. JiraClient
 
-The committed report artifacts show the shape of the output without exposing private CSV data.
+- handles REST API calls
+- authenticates with email/API token
+- searches Jira issues
+- adds comments
+- updates labels
+- reads transitions
+- transitions issues
 
-## Testing Strategy
+### 2. InfraTicketClassifier
 
-Tests focus on pure logic:
+- reads issue summary and description
+- classifies issues into Linux, Windows, Network, or Human Review
 
-- Jira issue transformation
-- GitHub pull request transformation
-- Markdown rendering
-- HTML rendering
-- pipeline step order
-- traceability normalization
-- linked issue traceability row generation
+### 3. InfraWorkflowOrchestrator
 
-This keeps tests reliable because they do not call live APIs.
+- loops through issues
+- builds action dictionaries
+- preserves dry-run safety
+- executes Jira updates only in live mode
 
-## What This Demonstrates
+### 4. route_jira_issues.py
 
-- API integration
-- configuration and secret separation
-- CSV/report generation
-- pytest-based verification
-- workflow orchestration
-- synthetic traceability modeling
-- practical automation for engineering data
+- command-line entry point
+- wires the client and orchestrator together
 
-## Next Improvements
+## Real Integration Issues Debugged
 
-- add richer dashboard styling
-- export synthetic traceability rows to CSV
-- add GitHub Actions CI badge to the README
-- add screenshots of the HTML dashboard
-- add more workflow metrics such as Jira status counts and PR age
+- Expired Jira API token caused authentication failure.
+- Missing `https://` in the base URL caused URL parsing failure.
+- JQL status filter did not match the actual Jira workflow.
+- Jira Cloud comment body required Atlassian Document Format.
+- Jira labels could not contain spaces.
+- Human-readable categories had to be separated from API-safe labels.
 
+## Result
+
+The workflow successfully connected to a personal Jira Cloud sandbox, fetched real issues, classified an infrastructure-style Linux ticket, created a dry-run action plan, and applied sandbox Jira updates after verification.
+
+## Safety Boundaries
+
+- Uses personal sandbox Jira data only.
+- No employer, customer, banking, or production data.
+- `.env` secrets excluded from Git.
+- Dry-run is default.
+- Live mode is intentionally explicit.
+- This is project-practice automation, not production enterprise deployment.
+
+## Interview Explanation
+
+This project demonstrates how I approach operational automation:
+
+1. Start with read-only visibility.
+2. Normalize messy data.
+3. Add deterministic classification.
+4. Add dry-run action planning.
+5. Add tests.
+6. Only then enable live updates.
+7. Debug real integration failures as they appear.
