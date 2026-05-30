@@ -7,3 +7,12 @@ __pycache__/
 
 data/*.csv
 reports/*.csv
+.aider*
+
+# Local env backups
+.env
+.env.*
+*.backup.local
+
+# Local editor settings
+.vscode/
