@@ -25,8 +25,6 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest tests -v --tb=short
+          PYTHONPATH=. pytest tests -v --tb=short
         env:
-          JIRA_TOKEN: "test"
-          JIRA_URL: "https://test.atlassian.net"
           PYTHONDONTWRITEBYTECODE: 1

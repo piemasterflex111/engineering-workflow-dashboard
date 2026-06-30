@@ -8,12 +8,12 @@ ENV_PATH = ROOT_DIR / ".env"
 CONFIG_PATH = ROOT_DIR / "config.toml"
 
 class EnvironmentSettings(BaseSettings):
-    jira_base_url: str = Field(alias="JIRA_BASE_URL")
-    jira_email: str = Field(alias="JIRA_EMAIL")
-    jira_api_token: str = Field(alias="JIRA_API_TOKEN")
-    github_token: str = Field(alias="GITHUB_TOKEN")
-    github_owner: str = Field(alias="GITHUB_OWNER")
-    github_repo: str = Field(alias="GITHUB_REPO")
+    jira_base_url: str = Field(alias="JIRA_BASE_URL", default="")
+    jira_email: str = Field(alias="JIRA_EMAIL", default="")
+    jira_api_token: str = Field(alias="JIRA_API_TOKEN", default="")
+    github_token: str = Field(alias="GITHUB_TOKEN", default="")
+    github_owner: str = Field(alias="GITHUB_OWNER", default="")
+    github_repo: str = Field(alias="GITHUB_REPO", default="")
     model_config = SettingsConfigDict(env_file=ENV_PATH)
 
 class JiraConfig(BaseModel):
